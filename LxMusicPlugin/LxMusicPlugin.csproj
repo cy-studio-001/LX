@@ -25,8 +25,8 @@
     <!-- <PackageReference Include="ClassIsland.Core" Version="1.7.0" /> -->
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('..\..\ClassIsland\ClassIsland.Core\ClassIsland.Core.csproj')">
-    <ProjectReference Include="..\..\ClassIsland\ClassIsland.Core\ClassIsland.Core.csproj" />
+  <ItemGroup Condition="Exists('..\..\ClassIsland.Core\ClassIsland.Core.csproj')">
+    <ProjectReference Include="..\..\ClassIsland.Core\ClassIsland.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
