@@ -66,6 +66,11 @@ jobs:
           cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
 
       # ===== 7. Build plugin =====
+      - name: Restore plugin dependencies
+        working-directory: ClassIsland
+        run: |
+          dotnet restore plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj
+
       - name: Build plugin
         working-directory: ClassIsland
         run: |
