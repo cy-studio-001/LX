@@ -65,16 +65,23 @@ jobs:
           mkdir -p ClassIsland/plugins/${{ env.PLUGIN_NAME }}
           cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
 
-      # ===== 7. Restore and build ClassIsland (excluding problematic platforms) =====
-      - name: Restore ClassIsland solution
+      # ===== 7. Restore and build only Windows-compatible ClassIsland projects =====
+      - name: Restore ClassIsland core projects
         working-directory: ClassIsland
         run: |
-          dotnet restore ClassIsland.sln
+          dotnet restore ClassIsland.Shared/ClassIsland.Shared.csproj
+          dotnet restore ClassIsland.Shared.IPC/ClassIsland.Shared.IPC.csproj
+          dotnet restore ClassIsland.Platforms.Abstractions/ClassIsland.Platforms.Abstractions.csproj
+          dotnet restore ClassIsland.Core/ClassIsland.Core.csproj
+          dotnet restore ClassIsland.PluginSdk/ClassIsland.PluginSdk.csproj
 
-      - name: Build ClassIsland Desktop (includes all dependencies)
+      - name: Build ClassIsland core projects
         working-directory: ClassIsland
         run: |
-          dotnet build ClassIsland.Desktop/ClassIsland.Desktop.csproj -c Release --no-restore
+          dotnet build ClassIsland.Shared/ClassIsland.Shared.csproj -c Release --no-restore
+          dotnet build ClassIsland.Shared.IPC/ClassIsland.Shared.IPC.csproj -c Release --no-restore
+          dotnet build ClassIsland.Platforms.Abstractions/ClassIsland.Platforms.Abstractions.csproj -c Release --no-restore
+          dotnet build ClassIsland.Core/ClassIsland.Core.csproj -c Release --no-restore
           dotnet build ClassIsland.PluginSdk/ClassIsland.PluginSdk.csproj -c Release --no-restore
 
       # ===== 8. Build plugin =====
