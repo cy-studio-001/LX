@@ -45,6 +45,8 @@ jobs:
         run: |
           git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
           cd ClassIsland
+          # 将 SSH URL 重写为 HTTPS，避免 submodule 权限问题
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
           git submodule update --init --recursive
 
       # ===== 5. Run ClassIsland plugin build environment setup =====
@@ -129,6 +131,8 @@ jobs:
         run: |
           git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
           cd ClassIsland
+          # 将 SSH URL 重写为 HTTPS，避免 submodule 权限问题
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
           git submodule update --init --recursive
 
       - name: Deploy plugin source
