@@ -65,7 +65,7 @@ jobs:
           mkdir -p ClassIsland/plugins/${{ env.PLUGIN_NAME }}
           cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
 
-      # ===== 7. Restore and build only Windows-compatible ClassIsland projects =====
+      # ===== 7. Restore and build ClassIsland core projects =====
       - name: Restore ClassIsland core projects
         working-directory: ClassIsland
         run: |
@@ -84,7 +84,14 @@ jobs:
           dotnet build ClassIsland.Core/ClassIsland.Core.csproj -c Release --no-restore
           dotnet build ClassIsland.PluginSdk/ClassIsland.PluginSdk.csproj -c Release --no-restore
 
-      # ===== 8. Build plugin =====
+      # Verify ClassIsland.Core output
+      - name: Verify ClassIsland.Core build
+        working-directory: ClassIsland
+        run: |
+          ls -la ClassIsland.Core/bin/Release/net8.0/ClassIsland.Core.dll
+          test -f ClassIsland.Core/bin/Release/net8.0/ClassIsland.Core.dll
+
+      # ===== 8. Build plugin (with ProjectReference to ClassIsland.Core) =====
       - name: Restore plugin dependencies
         working-directory: ClassIsland
         run: |
@@ -93,7 +100,7 @@ jobs:
       - name: Build plugin
         working-directory: ClassIsland
         run: |
-          dotnet build plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj -c Release --no-restore
+          dotnet build plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj -c Release --no-restore -v n
 
       # ===== 8. Verify output =====
       - name: Verify build output
