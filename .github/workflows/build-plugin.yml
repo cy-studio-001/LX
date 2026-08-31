@@ -61,9 +61,10 @@ jobs:
 
       # ===== 6. Deploy plugin source to ClassIsland/plugins =====
       - name: Deploy plugin source
+        shell: pwsh
         run: |
-          mkdir -p ClassIsland/plugins/${{ env.PLUGIN_NAME }}
-          cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
+          New-Item -ItemType Directory -Force -Path ClassIsland/plugins/${{ env.PLUGIN_NAME }}
+          Copy-Item plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/ -Recurse -Force
 
       # ===== 7. Restore and build ClassIsland core projects =====
       - name: Restore ClassIsland core projects
@@ -87,9 +88,10 @@ jobs:
       # Verify ClassIsland.Core output
       - name: Verify ClassIsland.Core build
         working-directory: ClassIsland
+        shell: pwsh
         run: |
-          ls -la ClassIsland.Core/bin/Release/net8.0/ClassIsland.Core.dll
-          test -f ClassIsland.Core/bin/Release/net8.0/ClassIsland.Core.dll
+          Test-Path ClassIsland.Core/bin/Release/net8.0/ClassIsland.Core.dll
+          Get-ChildItem ClassIsland.Core/bin/Release/net8.0/ClassIsland.Core.dll
 
       # ===== 8. Build plugin (with ProjectReference to ClassIsland.Core) =====
       - name: Restore plugin dependencies
@@ -104,19 +106,20 @@ jobs:
 
       # ===== 8. Verify output =====
       - name: Verify build output
+        shell: pwsh
         run: |
-          ls -la ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/
-          test -f ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll
+          Test-Path ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll
+          Get-ChildItem ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/
 
       # ===== 9. Package plugin (dll + plugin.json) =====
       - name: Package plugin
+        shell: pwsh
         run: |
-          mkdir -p artifact/${{ env.PLUGIN_NAME }}
-          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll artifact/${{ env.PLUGIN_NAME }}/
-          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/plugin.json artifact/${{ env.PLUGIN_NAME }}/
-          # 如果有依赖文件也复制
-          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/*.deps.json artifact/${{ env.PLUGIN_NAME }}/ 2>$null || true
-          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/*.pdb artifact/${{ env.PLUGIN_NAME }}/ 2>$null || true
+          New-Item -ItemType Directory -Force -Path artifact/${{ env.PLUGIN_NAME }}
+          Copy-Item ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll artifact/${{ env.PLUGIN_NAME }}/
+          Copy-Item ClassIsland/plugins/${{ env.PLUGIN_NAME }}/plugin.json artifact/${{ env.PLUGIN_NAME }}/
+          Get-ChildItem ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/*.deps.json | ForEach-Object { Copy-Item $_.FullName artifact/${{ env.PLUGIN_NAME }}/ }
+          Get-ChildItem ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/*.pdb | ForEach-Object { Copy-Item $_.FullName artifact/${{ env.PLUGIN_NAME }}/ }
 
       # ===== 10. Upload artifact =====
       - name: Upload plugin artifact
