@@ -69,13 +69,18 @@ jobs:
       - name: Restore ClassIsland core projects
         working-directory: ClassIsland
         run: |
-          dotnet restore ClassIsland.Core/ClassIsland.Core.csproj
           dotnet restore ClassIsland.Shared/ClassIsland.Shared.csproj
+          dotnet restore ClassIsland.Shared.IPC/ClassIsland.Shared.IPC.csproj
+          dotnet restore ClassIsland.Platforms.Abstractions/ClassIsland.Platforms.Abstractions.csproj
+          dotnet restore ClassIsland.Core/ClassIsland.Core.csproj
           dotnet restore ClassIsland.PluginSdk/ClassIsland.PluginSdk.csproj
 
       - name: Build ClassIsland core projects
         working-directory: ClassIsland
         run: |
+          dotnet build ClassIsland.Shared/ClassIsland.Shared.csproj -c Release --no-restore
+          dotnet build ClassIsland.Shared.IPC/ClassIsland.Shared.IPC.csproj -c Release --no-restore
+          dotnet build ClassIsland.Platforms.Abstractions/ClassIsland.Platforms.Abstractions.csproj -c Release --no-restore
           dotnet build ClassIsland.Core/ClassIsland.Core.csproj -c Release --no-restore
           dotnet build ClassIsland.PluginSdk/ClassIsland.PluginSdk.csproj -c Release --no-restore
 
