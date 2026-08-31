@@ -80,6 +80,11 @@ jobs:
           dotnet build ClassIsland.PluginSdk/ClassIsland.PluginSdk.csproj -c Release --no-restore
 
       # ===== 8. Build plugin =====
+      - name: Restore plugin dependencies
+        working-directory: ClassIsland
+        run: |
+          dotnet restore plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj
+
       - name: Build plugin
         working-directory: ClassIsland
         run: |
