@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UseAvalonia>true</UseAvalonia>
     <AssemblyName>LxMusicPlugin</AssemblyName>
     <RootNamespace>LxMusicPlugin</RootNamespace>
