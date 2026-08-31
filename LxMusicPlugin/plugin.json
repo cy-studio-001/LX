@@ -1,0 +1,12 @@
+{
+  "name": "LxMusicPlugin",
+  "displayName": "LX Music 集成",
+  "description": "将 LX Music 当前播放歌曲的封面设为 ClassIsland 背景，并在底部显示实时歌词",
+  "version": "1.0.0",
+  "author": "LX Music Plugin Author",
+  "repository": "https://github.com/lyswhut/lx-music-desktop",
+  "entryPoint": "LxMusicPlugin.LxMusicPlugin",
+  "dependencies": {
+    "ClassIsland.Core": "1.7.0"
+  }
+}

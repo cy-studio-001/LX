@@ -1,0 +1,114 @@
+<ci:SettingsPageBase x:Class="LxMusicPlugin.Views.SettingsPages.LxMusicSettingsPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:local="clr-namespace:LxMusicPlugin.Views.SettingsPages"
+    xmlns:vm="clr-namespace:LxMusicPlugin.ViewModels"
+    Title="LX Music 集成"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    Background="{DynamicResource MaterialDesignPaper}"
+    FontFamily="{StaticResource HarmonyOsSans}"
+    TextElement.FontWeight="Regular"
+    TextElement.FontSize="14"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    d:DataContext="{d:DesignInstance local:LxMusicSettingsPage}">
+
+    <ScrollViewer>
+        <StackPanel Spacing="24" Margin="24">
+            <!-- 连接设置 -->
+            <Border Classes="Card" Padding="16">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="连接设置" FontSize="16" FontWeight="Medium" />
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="LX Music API 地址" FontWeight="Medium" />
+                        <TextBox Text="{Binding Settings.LxMusicApiUrl}" Watermark="http://127.0.0.1:23330" />
+                        <TextBlock Text="默认端口为 23330，请在 LX Music 设置 → 实验室 → 开放 API 服务 中开启" 
+                                   FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="8" Orientation="Horizontal">
+                        <Button Content="测试连接" Command="{Binding TestConnectionCommand}" />
+                        <TextBlock Text="{Binding ConnectionStatus}" 
+                                   VerticalAlignment="Center" Margin="12,0,0,0"
+                                   Foreground="{Binding ConnectionStatusColor}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 背景封面设置 -->
+            <Border Classes="Card" Padding="16">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="背景封面设置" FontSize="16" FontWeight="Medium" />
+                    
+                    <CheckBox Content="启用背景封面" IsChecked="{Binding Settings.EnableBackgroundCover}" />
+                    
+                    <StackPanel Spacing="8" IsEnabled="{Binding Settings.EnableBackgroundCover}">
+                        <TextBlock Text="背景透明度" FontWeight="Medium" />
+                        <Slider Minimum="0" Maximum="1" Value="{Binding Settings.BackgroundOpacity}" 
+                                TickFrequency="0.1" IsSnapToTickEnabled="True" />
+                        <TextBlock Text="{Binding Settings.BackgroundOpacity, StringFormat='当前: {0:P0}'}" 
+                                   FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="8" IsEnabled="{Binding Settings.EnableBackgroundCover}">
+                        <CheckBox Content="启用模糊效果" IsChecked="{Binding Settings.BlurBackground}" />
+                        <TextBlock Text="对背景图片应用模糊效果，使前景内容更清晰" 
+                                   FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 歌词显示设置 -->
+            <Border Classes="Card" Padding="16">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="歌词显示设置" FontSize="16" FontWeight="Medium" />
+                    
+                    <CheckBox Content="启用歌词显示" IsChecked="{Binding Settings.EnableLyricsDisplay}" />
+                    
+                    <StackPanel Spacing="8" IsEnabled="{Binding Settings.EnableLyricsDisplay}">
+                        <TextBlock Text="更新方式" FontWeight="Medium" />
+                        <ComboBox SelectedIndex="{Binding Settings.UseSse, Converter={x:Static local:BoolToIndexConverter.Instance}}">
+                            <ComboBoxItem Content="SSE 实时推送 (推荐)" />
+                            <ComboBoxItem Content="轮询模式" />
+                        </ComboBox>
+                        <TextBlock Text="SSE 模式下歌词和进度实时更新，轮询模式按间隔更新" 
+                                   FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="8" IsEnabled="{Binding Settings.EnableLyricsDisplay}">
+                        <TextBlock Text="轮询间隔 (毫秒)" FontWeight="Medium" />
+                        <NumericUpDown Value="{Binding Settings.PollIntervalMs}" Minimum="500" Maximum="10000" Increment="500" />
+                        <TextBlock Text="仅在轮询模式下生效，建议 1000ms 以上避免过载" 
+                                   FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 状态显示 -->
+            <Border Classes="Card" Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="当前状态" FontSize="16" FontWeight="Medium" />
+                    
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="16">
+                        <TextBlock Text="连接状态:" FontWeight="Medium" />
+                        <TextBlock Grid.Column="1" Text="{Binding StatusText}" Foreground="{Binding StatusColor}" />
+                        
+                        <TextBlock Grid.Row="1" Text="当前歌曲:" FontWeight="Medium" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentSong}" TextTrimming="CharacterEllipsis" />
+                        
+                        <TextBlock Grid.Row="2" Text="播放状态:" FontWeight="Medium" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding PlaybackStatus}" />
+                        
+                        <TextBlock Grid.Row="3" Text="封面图:" FontWeight="Medium" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CoverStatus}" />
+                        
+                        <TextBlock Grid.Row="4" Text="最后更新:" FontWeight="Medium" />
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LastUpdateTime}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

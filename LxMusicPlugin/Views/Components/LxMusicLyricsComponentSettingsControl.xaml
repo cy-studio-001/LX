@@ -1,0 +1,25 @@
+<ci:ComponentBase x:TypeArguments="local:LxMusicLyricsComponentSettings"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:local="clr-namespace:LxMusicPlugin.Views.Components"
+    x:Class="LxMusicPlugin.Views.Components.LxMusicLyricsComponentSettingsControl"
+    x:DataType="local:LxMusicLyricsComponentSettings">
+
+    <StackPanel Spacing="16" Margin="8">
+        <TextBlock Text="LX Music 歌词组件设置" FontSize="16" FontWeight="Medium" />
+
+        <StackPanel Spacing="12">
+            <TextBlock Text="API 服务地址" FontWeight="Medium" />
+            <TextBox Text="{Binding ApiUrl}" Watermark="http://127.0.0.1:23330" />
+            <TextBlock Text="请确保 LX Music 桌面版已开启「开放 API 服务」(设置 → 实验室 → 开放 API 服务)" 
+                       FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <StackPanel Spacing="8">
+            <CheckBox Content="显示歌词" IsChecked="{Binding ShowLyrics}" />
+            <CheckBox Content="显示封面图" IsChecked="{Binding ShowCover}" />
+            <CheckBox Content="显示播放控制按钮" IsChecked="{Binding ShowControls}" />
+        </StackPanel>
+    </StackPanel>
+</ci:ComponentBase>

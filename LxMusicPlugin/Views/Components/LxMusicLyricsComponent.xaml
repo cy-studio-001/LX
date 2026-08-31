@@ -1,0 +1,101 @@
+<ci:ComponentBase x:TypeArguments="local:LxMusicLyricsComponentSettings"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:local="clr-namespace:LxMusicPlugin.Views.Components"
+    xmlns:converters="clr-namespace:LxMusicPlugin.Converters"
+    x:Class="LxMusicPlugin.Views.Components.LxMusicLyricsComponent"
+    x:DataType="local:LxMusicLyricsComponentViewModel"
+    Height="80"
+    MinHeight="60"
+    MaxHeight="120">
+
+    <ci:ComponentBase.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <converters:DoubleToProgressConverter x:Key="DoubleToProgress" />
+    </ci:ComponentBase.Resources>
+
+    <Border Background="{DynamicResource MaterialDesignPaper}"
+            BorderBrush="{DynamicResource MaterialDesignDivider}"
+            BorderThickness="0,1,0,0"
+            CornerRadius="0">
+        
+        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" Margin="16,8">
+            
+            <!-- 封面图 -->
+            <Border Grid.RowSpan="2" Width="56" Height="56" Margin="0,0,16,0"
+                    CornerRadius="8" ClipToBounds="True"
+                    IsVisible="{Binding HasCover, Converter={StaticResource BoolToVis}}">
+                <Image Source="{Binding CoverImage}" Stretch="UniformToFill" />
+            </Border>
+
+            <!-- 主信息行 -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                <TextBlock Text="{Binding SongName}" 
+                           FontSize="14" FontWeight="Medium"
+                           Foreground="{DynamicResource MaterialDesignBody}"
+                           TextTrimming="CharacterEllipsis" />
+                
+                <TextBlock Text="{Binding ArtistAlbum}" 
+                           FontSize="12" 
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           TextTrimming="CharacterEllipsis" />
+                
+                <!-- 进度条 -->
+                <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0" VerticalAlignment="Center">
+                    <ProgressBar Value="{Binding ProgressPercent}" 
+                                 Maximum="100" Height="4"
+                                 Background="{DynamicResource MaterialDesignDivider}"
+                                 Foreground="{DynamicResource MaterialDesignPrimary}"
+                                 BorderThickness="0" CornerRadius="2" />
+                    <TextBlock Grid.Column="1" Text="{Binding ProgressText}" 
+                               FontSize="10" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                               Margin="8,0,0,0" VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+
+            <!-- 播放控制 -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                <Button Classes="Icon" ToolTip.Tip="上一曲" 
+                        Command="{Binding PrevCommand}"
+                        IsVisible="{Binding IsConnected, Converter={StaticResource BoolToVis}}">
+                    <PathIcon Data="M6,6h4v12H6zm10,0h4v12h-4z" Width="20" Height="20" />
+                </Button>
+                <Button Classes="Icon" ToolTip.Tip="{Binding PlayPauseTooltip}" 
+                        Command="{Binding PlayPauseCommand}"
+                        IsVisible="{Binding IsConnected, Converter={StaticResource BoolToVis}}">
+                    <PathIcon Data="{Binding PlayPauseIcon}" Width="24" Height="24" />
+                </Button>
+                <Button Classes="Icon" ToolTip.Tip="下一曲" 
+                        Command="{Binding NextCommand}"
+                        IsVisible="{Binding IsConnected, Converter={StaticResource BoolToVis}}">
+                    <PathIcon Data="M6,6h4v12H6zm10,0h4v12h-4z" Width="20" Height="20" RenderTransformOrigin="0.5,0.5">
+                        <PathIcon.RenderTransform>
+                            <ScaleTransform ScaleX="-1" />
+                        </PathIcon.RenderTransform>
+                    </PathIcon>
+                </Button>
+            </StackPanel>
+
+            <!-- 歌词行 -->
+            <Border Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0" Padding="12,4"
+                    Background="{DynamicResource MaterialDesignCardBackground}"
+                    CornerRadius="6" BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    BorderThickness="1"
+                    IsVisible="{Binding ShowLyrics, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding CurrentLyricLine}" 
+                           FontSize="13" FontWeight="Medium"
+                           Foreground="{DynamicResource MaterialDesignBody}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap" />
+            </Border>
+
+            <!-- 断开连接提示 -->
+            <TextBlock Grid.Row="1" Grid.ColumnSpan="3" 
+                       Text="LX Music 未连接 - 请检查 API 服务是否开启 (默认端口 23330)"
+                       FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       IsVisible="{Binding IsConnected, Converter={StaticResource BoolToVis}, ConverterParameter=inverse}" />
+        </Grid>
+    </Border>
+</ci:ComponentBase>

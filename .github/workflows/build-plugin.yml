@@ -1,0 +1,164 @@
+name: Build LxMusicPlugin
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'LxMusicPlugin/**'
+      - '.github/workflows/build-plugin.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'LxMusicPlugin/**'
+  workflow_dispatch:  # 手动触发
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  CLASSISLAND_REPO: 'https://github.com/ClassIsland/ClassIsland.git'
+  PLUGIN_NAME: 'LxMusicPlugin'
+
+jobs:
+  build:
+    name: Build Plugin (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      # ===== 1. Checkout 插件源码 =====
+      - name: Checkout plugin source
+        uses: actions/checkout@v4
+        with:
+          path: plugin-source
+
+      # ===== 2. Setup .NET =====
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # ===== 3. Setup PowerShell Core =====
+      - name: Setup PowerShell Core
+        uses: actions/setup-powershell@v2
+        with:
+          version: 'latest'
+
+      # ===== 4. Clone ClassIsland & init submodules =====
+      - name: Clone ClassIsland repository
+        run: |
+          git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
+          cd ClassIsland
+          git submodule update --init --recursive
+
+      # ===== 5. Run ClassIsland plugin build environment setup =====
+      - name: Initialize plugin build environment
+        working-directory: ClassIsland
+        shell: pwsh
+        run: |
+          ./tools/plugin/build.ps1
+          # 重启 shell 以更新环境变量
+          $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH","User")
+
+      # ===== 6. Deploy plugin source to ClassIsland/plugins =====
+      - name: Deploy plugin source
+        run: |
+          mkdir -p ClassIsland/plugins/${{ env.PLUGIN_NAME }}
+          cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
+
+      # ===== 7. Build plugin =====
+      - name: Build plugin
+        working-directory: ClassIsland
+        run: |
+          dotnet build plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj -c Release --no-restore
+
+      # ===== 8. Verify output =====
+      - name: Verify build output
+        run: |
+          ls -la ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/
+          test -f ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll
+
+      # ===== 9. Package plugin (dll + plugin.json) =====
+      - name: Package plugin
+        run: |
+          mkdir -p artifact/${{ env.PLUGIN_NAME }}
+          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll artifact/${{ env.PLUGIN_NAME }}/
+          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/plugin.json artifact/${{ env.PLUGIN_NAME }}/
+          # 如果有依赖文件也复制
+          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/*.deps.json artifact/${{ env.PLUGIN_NAME }}/ 2>$null || true
+          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/*.pdb artifact/${{ env.PLUGIN_NAME }}/ 2>$null || true
+
+      # ===== 10. Upload artifact =====
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PLUGIN_NAME }}-windows
+          path: artifact/${{ env.PLUGIN_NAME }}/**
+          retention-days: 30
+
+      # ===== 11. Create Release (on tag push) =====
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifact/${{ env.PLUGIN_NAME }}/*.dll
+            artifact/${{ env.PLUGIN_NAME }}/*.json
+            artifact/${{ env.PLUGIN_NAME }}/*.deps.json
+            artifact/${{ env.PLUGIN_NAME }}/*.pdb
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===== 可选：多平台构建 (Windows + Linux) =====
+  # ClassIsland 插件主要运行在 Windows，但也可以在 Linux 上交叉编译
+  build-linux:
+    name: Build Plugin (Linux - Cross Compile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: false  # 默认关闭，如需启用改为 true
+
+    steps:
+      - name: Checkout plugin source
+        uses: actions/checkout@v4
+        with:
+          path: plugin-source
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Clone ClassIsland repository
+        run: |
+          git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
+          cd ClassIsland
+          git submodule update --init --recursive
+
+      - name: Deploy plugin source
+        run: |
+          mkdir -p ClassIsland/plugins/${{ env.PLUGIN_NAME }}
+          cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
+
+      - name: Build plugin (Linux)
+        working-directory: ClassIsland
+        run: |
+          dotnet build plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj -c Release --no-restore -r linux-x64 --self-contained false
+
+      - name: Verify build output
+        run: |
+          ls -la ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/linux-x64/
+
+      - name: Package plugin
+        run: |
+          mkdir -p artifact/${{ env.PLUGIN_NAME }}-linux
+          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/linux-x64/${{ env.PLUGIN_NAME }}.dll artifact/${{ env.PLUGIN_NAME }}-linux/
+          cp ClassIsland/plugins/${{ env.PLUGIN_NAME }}/plugin.json artifact/${{ env.PLUGIN_NAME }}-linux/
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PLUGIN_NAME }}-linux
+          path: artifact/${{ env.PLUGIN_NAME }}-linux/**
+          retention-days: 30

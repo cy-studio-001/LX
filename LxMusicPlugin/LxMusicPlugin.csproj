@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseAvalonia>true</UseAvalonia>
+    <AssemblyName>LxMusicPlugin</AssemblyName>
+    <RootNamespace>LxMusicPlugin</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- 插件构建配置 -->
+    <PluginId>LxMusicPlugin</PluginId>
+    <PluginName>LX Music 集成</PluginName>
+    <PluginDescription>将 LX Music 当前播放歌曲的封面设为 ClassIsland 背景，并在底部显示实时歌词</PluginDescription>
+    <PluginVersion>1.0.0</PluginVersion>
+    <PluginAuthor>LX Music Plugin Author</PluginAuthor>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.1.3" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Material.Icons" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <!-- ClassIsland 核心库引用 - 需要在 ClassIsland 源码环境中构建 -->
+    <!-- <PackageReference Include="ClassIsland.Core" Version="1.7.0" /> -->
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\ClassIsland\ClassIsland.Core\ClassIsland.Core.csproj')">
+    <ProjectReference Include="..\..\ClassIsland\ClassIsland.Core\ClassIsland.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+    <Compile Update="Views\Components\LxMusicLyricsComponent.xaml.cs">
+      <DependentUpon>LxMusicLyricsComponent.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Components\LxMusicLyricsComponentSettingsControl.xaml.cs">
+      <DependentUpon>LxMusicLyricsComponentSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SettingsPages\LxMusicSettingsPage.xaml.cs">
+      <DependentUpon>LxMusicSettingsPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <!-- 复制插件文件到输出目录 -->
+  <Target Name="CopyPluginFiles" AfterTargets="Build">
+    <Copy SourceFiles="plugin.json" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="plugin.json" DestinationFolder="$(OutputPath)\$(AssemblyName)" />
+  </Target>
+
+</Project>
