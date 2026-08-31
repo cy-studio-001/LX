@@ -41,9 +41,10 @@ jobs:
 
       # ===== 3. Clone ClassIsland & init submodules =====
       # windows-latest 已预装 PowerShell Core (pwsh)，无需额外安装
+      # 注意：不使用 --depth 1，因为 ClassIsland 构建需要 git describe 获取版本号
       - name: Clone ClassIsland repository
         run: |
-          git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
+          git clone ${{ env.CLASSISLAND_REPO }} ClassIsland
           cd ClassIsland
           # 将 SSH URL 重写为 HTTPS，避免 submodule 权限问题
           git config --global url."https://github.com/".insteadOf "git@github.com:"
@@ -129,7 +130,7 @@ jobs:
 
       - name: Clone ClassIsland repository
         run: |
-          git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
+          git clone ${{ env.CLASSISLAND_REPO }} ClassIsland
           cd ClassIsland
           # 将 SSH URL 重写为 HTTPS，避免 submodule 权限问题
           git config --global url."https://github.com/".insteadOf "git@github.com:"
