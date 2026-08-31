@@ -21,12 +21,15 @@
     <PackageReference Include="Material.Icons" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.2" />
-    <!-- ClassIsland 核心库引用 - 需要在 ClassIsland 源码环境中构建 -->
-    <!-- <PackageReference Include="ClassIsland.Core" Version="1.7.0" /> -->
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('..\..\ClassIsland.Core\ClassIsland.Core.csproj')">
+  <ItemGroup>
+    <!-- ClassIsland 核心库引用 - 在 ClassIsland 源码环境中构建 -->
+    <ProjectReference Include="..\..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+    <ProjectReference Include="..\..\ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj" />
+    <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
     <ProjectReference Include="..\..\ClassIsland.Core\ClassIsland.Core.csproj" />
+    <ProjectReference Include="..\..\ClassIsland.PluginSdk\ClassIsland.PluginSdk.csproj" />
   </ItemGroup>
 
   <ItemGroup>
