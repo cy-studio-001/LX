@@ -39,13 +39,8 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # ===== 3. Setup PowerShell Core =====
-      - name: Setup PowerShell Core
-        uses: actions/setup-powershell@v2
-        with:
-          version: 'latest'
-
-      # ===== 4. Clone ClassIsland & init submodules =====
+      # ===== 3. Clone ClassIsland & init submodules =====
+      # windows-latest 已预装 PowerShell Core (pwsh)，无需额外安装
       - name: Clone ClassIsland repository
         run: |
           git clone --depth 1 ${{ env.CLASSISLAND_REPO }} ClassIsland
