@@ -1,8 +1,9 @@
 using System.Reflection;
+using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.Components;
-using ClassIsland.Shared.Interfaces;
 using LxMusicPlugin.Models;
 using LxMusicPlugin.Services;
 using LxMusicPlugin.Views.Components;

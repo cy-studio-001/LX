@@ -1,13 +1,14 @@
-using System.Windows.Input;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Controls.Components;
+using ClassIsland.Core.Controls;
 using LxMusicPlugin.Models;
 using LxMusicPlugin.Services;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 
 namespace LxMusicPlugin.Views.Components;
 
@@ -116,7 +117,7 @@ public partial class LxMusicLyricsComponentViewModel : ObservableObject
         }
     }
 
-    private void OnBackgroundChanged(object? sender, Avalonia.Media.IBrush? brush)
+    private void OnBackgroundChanged(object? sender, IBrush? brush)
     {
         if (brush is ImageBrush imgBrush && imgBrush.Source is Bitmap bitmap)
         {

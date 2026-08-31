@@ -1,6 +1,6 @@
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Controls.SettingsPages;
+using ClassIsland.Core.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LxMusicPlugin.Models;
