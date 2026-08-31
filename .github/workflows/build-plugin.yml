@@ -65,12 +65,13 @@ jobs:
           mkdir -p ClassIsland/plugins/${{ env.PLUGIN_NAME }}
           cp -r plugin-source/LxMusicPlugin/* ClassIsland/plugins/${{ env.PLUGIN_NAME }}/
 
-      # ===== 7. Build plugin =====
-      - name: Restore plugin dependencies
+      # ===== 7. Build ClassIsland solution (required for ProjectReference) =====
+      - name: Build ClassIsland solution
         working-directory: ClassIsland
         run: |
-          dotnet restore plugins/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.csproj
+          dotnet build ClassIsland.sln -c Release --no-restore
 
+      # ===== 8. Build plugin =====
       - name: Build plugin
         working-directory: ClassIsland
         run: |
