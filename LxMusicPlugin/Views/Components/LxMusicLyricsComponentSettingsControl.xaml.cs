@@ -1,4 +1,4 @@
-using ClassIsland.Core.Controls.Components;
+using ClassIsland.Core.Controls;
 using LxMusicPlugin.Models;
 
 namespace LxMusicPlugin.Views.Components;

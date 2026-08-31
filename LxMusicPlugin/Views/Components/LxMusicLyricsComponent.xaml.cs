@@ -3,7 +3,7 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Controls.Components;
+using ClassIsland.Core.Controls;
 using LxMusicPlugin.Models;
 using LxMusicPlugin.Services;
 using Microsoft.Extensions.Logging;
